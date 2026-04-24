@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://web-ban-hang-khaki.vercel.app/sitemap.xml

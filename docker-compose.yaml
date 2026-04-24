@@ -1,0 +1,105 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: web-ban-hang-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: web-ban-hang
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: web-ban-hang-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer:latest
+    container_name: web-ban-hang-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: web-ban-hang-server
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    env_file:
+      - ./server/.env
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@db:5432/web-ban-hang?schema=public"
+      REDIS_URI: "redis://redis:6379"
+    networks:
+      - app-network
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: web-ban-hang-admin
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - server
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    environment:
+      - VITE_PROXY_TARGET=http://server:4000
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: web-ban-hang-client
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    environment:
+      - VITE_PROXY_TARGET=http://server:4000
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

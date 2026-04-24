@@ -1,0 +1,36 @@
+# --- CHUNG TOÀN DỰ ÁN ---
+node_modules/
+.DS_Store
+.vscode/
+*.log
+.env
+.env.*
+
+# --- DỮ LIỆU & AI ---
+eCommerce-dataset-samples/
+ai/
+*.csv
+*.json
+!package.json
+!composer.json
+!tsconfig.json
+!package-lock.json
+
+# --- PHẦN CỦA SERVER ---
+server/dist/
+server/server_build/
+server/coverage/
+server/*.tsbuildinfo
+server/*.txt
+server/prisma/dev.db
+server/prisma/dev.db-journal
+
+# --- PHẦN CỦA CLIENT ---
+client/dist/
+client/build/
+client/.eslintcache
+client/node_modules/
+
+# --- AGENT & TOOLS ---
+.env*
+docker-compose.override.yml
