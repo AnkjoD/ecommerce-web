@@ -32,4 +32,5 @@ client/node_modules/
 # --- AGENT & TOOLS ---
 .env*
 docker-compose.override.yml
+.agent/
 scripts/
