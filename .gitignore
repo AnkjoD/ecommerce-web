@@ -8,10 +8,8 @@ node_modules/
 
 # --- DỮ LIỆU & AI ---
 eCommerce-dataset-samples/
-ai/
 *.csv
-*.json
-!package.json
+!ai/data/*_seed.csv
 !composer.json
 !tsconfig.json
 !package-lock.json
@@ -34,3 +32,4 @@ client/node_modules/
 # --- AGENT & TOOLS ---
 .env*
 docker-compose.override.yml
+scripts/

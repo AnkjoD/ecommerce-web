@@ -13,6 +13,8 @@ import AuthButton from '~/components/AppButton'
 import { AppContext } from '~/contexts/app.context'
 import { toast } from 'react-toastify'
 import { setProfileToLS } from '~/utils/auth'
+import { useContext } from 'react'
+import { useNavigate, useLocation } from 'react-router'
 
 const Register = () => {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)

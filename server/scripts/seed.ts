@@ -115,6 +115,7 @@ async function seedProducts(categories: Category[]) {
       brand: 'Nike',
       name: 'Air Zoom Pegasus 40',
       category: 'Giày Chạy Bộ',
+      tags: ['chạy bộ', 'running', 'tập gym', 'êm chân', 'nhẹ', 'thoáng khí', 'hàng ngày', 'zoom air', 'nike', 'bền'],
       description: {
         short: 'Đôi giày "ngựa chiến" bền bỉ cho mọi cự ly chạy bộ hàng ngày.',
         long: 'Nike Air Zoom Pegasus 40 kế thừa di sản của dòng Pegasus với sự kết hợp giữa công nghệ React Foam siêu nhẹ và 2 đơn vị Zoom Air (mũi và gót). Sự kết hợp này tạo ra cảm giác êm ái nhưng vẫn cực kỳ phản hồi, giúp tiết kiệm năng lượng cho runner. Upper được làm từ lưới kỹ thuật giúp thoáng khí tối đa cho các buổi chạy dài.',
@@ -125,6 +126,7 @@ async function seedProducts(categories: Category[]) {
       brand: 'Adidas',
       name: 'Ultraboost Light',
       category: 'Giày Chạy Bộ',
+      tags: ['chạy bộ', 'ultraboost', 'boost', 'êm ái', 'phục hồi', 'thoải mái', 'adidas', 'đi lại hàng ngày', 'nhẹ', 'ôm chân'],
       description: {
         short: 'Trải nghiệm sự êm ái đỉnh cao với dòng Ultraboost nhẹ nhất từ trước đến nay.',
         long: 'Adidas Ultraboost Light sử dụng công nghệ Light Boost mới, nhẹ hơn 30% so với thế hệ trước nhưng vẫn giữ được độ hoàn trả năng lượng tuyệt vời. Hệ thống Linear Energy Push (LEP) giúp tăng cường độ ổn định, trong khi Primeknit+ ôm sát bàn chân như một đôi tất. Đây là lựa chọn số 1 cho các buổi chạy phục hồi và đi lại hàng ngày.',
@@ -135,6 +137,7 @@ async function seedProducts(categories: Category[]) {
       brand: 'Nike',
       name: 'Alphafly 3 "Proto"',
       category: 'Giày Chạy Bộ',
+      tags: ['marathon', 'đua', 'thi đấu', 'carbon', 'tốc độ', 'kỷ lục', 'racing', 'chuyên nghiệp', 'zoomx', 'đánh marathon'],
       description: {
         short: 'Kẻ phá vỡ mọi kỷ lục Marathon với thiết kế khí động học đỉnh cao.',
         long: 'Nike Alphafly 3 là đôi giày siêu hạng dành cho các cuộc đua. Với đệm ZoomX dày tối đa, tấm sợi carbon Flyplate toàn chiều dài và hai túi khí Air Zoom khổng lồ ở mũi chân, nó giúp runner đẩy nhanh tốc độ mà ít tốn sức nhất. Phiên bản "Proto" mang thiết kế tối giản, tập trung hoàn toàn vào hiệu suất.',
@@ -142,14 +145,81 @@ async function seedProducts(categories: Category[]) {
       specs: { material: 'Atomknit 3.0', tech: 'ZoomX Foam, Carbon Flyplate', terrain: 'Road Racing' },
     },
     {
-        brand: 'Adidas',
-        name: 'Samba OG',
-        category: 'Giày Sneakers',
-        description: {
-            short: 'Biểu tượng phong cách đường phố không bao giờ lỗi mốt.',
-            long: 'Được thiết kế ban đầu cho bóng đá trong nhà, Adidas Samba OG đã trở thành một biểu tượng thời trang toàn cầu. Với thân giày bằng da mềm, viền chữ T bằng da lộn đặc trưng và đế cao su gum, đôi giày mang lại vẻ đẹp cổ điển, tối giản nhưng cực kỳ tinh tế.',
-        },
-        specs: { material: 'Full Grain Leather, Suede', tech: 'Gum Rubber Sole', terrain: 'Casual' },
+      brand: 'Adidas',
+      name: 'Samba OG',
+      category: 'Giày Sneakers',
+      tags: ['samba', 'đường phố', 'hot trend', 'thời trang', 'vintage', 'bóng đá trong nhà', 'adidas', 'phối đồ', 'cổ điển', 'đi chơi'],
+      description: {
+        short: 'Biểu tượng phong cách đường phố không bao giờ lỗi mốt.',
+        long: 'Được thiết kế ban đầu cho bóng đá trong nhà, Adidas Samba OG đã trở thành một biểu tượng thời trang toàn cầu. Với thân giày bằng da mềm, viền chữ T bằng da lộn đặc trưng và đế cao su gum, đôi giày mang lại vẻ đẹp cổ điển, tối giản nhưng cực kỳ tinh tế.',
+      },
+      specs: { material: 'Full Grain Leather, Suede', tech: 'Gum Rubber Sole', terrain: 'Casual' },
+    },
+    {
+      brand: 'Converse',
+      name: 'Chuck Taylor All Star Classic',
+      category: 'Giày Sneakers',
+      tags: ['converse', 'canvas', 'giày vải', 'classic', 'street style', 'cổ điển'],
+      description: {
+        short: 'Đôi giày vải kinh điển phù hợp với mọi lứa tuổi và phong cách.',
+        long: 'Không cần bàn cãi về độ phổ biến của Chuck Taylor All Star. Đôi giày canvas với đế cao su lưu hóa, mũi giày bọc cao su đặc trưng và logo hình ngôi sao ở mắt cá chân là item "must-have" trong bất kỳ tủ đồ nào. Dễ mang, dễ phối, và mang đậm chất cổ điển.',
+      },
+      specs: { material: 'Canvas', tech: 'Vulcanized Rubber', terrain: 'Casual' },
+    },
+    {
+      brand: 'Clarks',
+      name: 'Tilden Cap Oxford',
+      category: 'Giày Tây',
+      tags: ['giày tây', 'da thật', 'văn phòng', 'công sở', 'lịch sự', 'trang trọng', 'đi làm', 'Oxford', 'formal', 'giá rẻ'],
+      description: {
+        short: 'Giày Tây da thật lịch lãm dành cho dân công sở và những dịp trang trọng.',
+        long: 'Giày Oxford Tilden Cap từ Clarks mang đến vẻ ngoài sang trọng và chuyên nghiệp. Chất liệu da bò cao cấp kết hợp với miếng lót đệm OrthoLite giúp hút ẩm và tạo sự êm ái khi phải đi lại suốt ngày dài trong văn phòng.',
+      },
+      specs: { material: 'Genuine Leather', tech: 'OrthoLite Footbed', terrain: 'Office/Formal' },
+    },
+    {
+      brand: 'Christian Louboutin',
+      name: 'So Kate 120mm',
+      category: 'Giày Cao Gót',
+      tags: ['cao gót', 'nữ', 'đế đỏ', 'sang chảnh', 'tặng bạn gái', 'tiệc', 'dự sự kiện', 'luxury', 'quyến rũ', 'gót nhọn'],
+      description: {
+        short: 'Đôi giày cao gót đế đỏ huyền thoại, tôn lên đường cong quyến rũ của phái đẹp.',
+        long: 'Mẫu giày So Kate nổi tiếng với phần gót nhọn cao 120mm và phần mũi nhọn tinh tế, kéo dài đôi chân một cách hoàn hảo. Tất nhiên không thể thiếu phần đế sơn mài màu đỏ làm nên thương hiệu của Christian Louboutin.',
+      },
+      specs: { material: 'Patent Leather', tech: 'Red Lacquered Sole', terrain: 'Party/Event' },
+    },
+    {
+      brand: 'Crocs',
+      name: 'Classic Clog',
+      category: 'Sandal',
+      tags: ['dép', 'sandal', 'đi biển', 'chống nước', 'thoải mái', 'nhẹ', 'mùa hè', 'nhà bếp', 'nhà tắm', 'đi mưa', 'tiện dụng'],
+      description: {
+        short: 'Dép sục siêu nhẹ, thoải mái đi mưa đi nắng, cực kỳ tiện dụng.',
+        long: 'Đôi dép đã làm thay đổi cả thế giới về sự thoải mái. Làm từ chất liệu nhựa tế bào Croslite độc quyền, siêu nhẹ, không thấm nước và dễ dàng vệ sinh. Các lỗ hổng trên thân giúp thông thoáng và thoát nước hoàn hảo, phù hợp cho đi biển hoặc đi bộ hằng ngày.',
+      },
+      specs: { material: 'Croslite Foam', tech: 'Water-friendly', terrain: 'Casual/Beach' },
+    },
+    {
+      brand: 'Biti\'s',
+      name: 'Hunter X 2024',
+      category: 'Giày Thể Thao',
+      tags: ['giá rẻ', 'học sinh', 'sinh viên', 'trẻ em', 'đi học', 'thể thao', 'bền', 'Việt Nam', 'tiết kiệm', 'dưới 1 triệu'],
+      description: {
+        short: 'Phiên bản cải tiến mới nhất của Biti\'s Hunter, đậm chất thời trang và thể thao.',
+        long: 'Dành cho các bạn nhỏ năng động, Biti\'s Hunter X phiên bản 2024 mang đến công nghệ đệm LiteFoam 2.0 đàn hồi tốt hơn và đế tiếp đất bám dính. Kiểu dáng thời trang, cực kỳ phù hợp cho các hoạt động thể thao học đường.',
+      },
+      specs: { material: 'Mesh', tech: 'LiteFoam 2.0', terrain: 'School/Sports' },
+    },
+    {
+      brand: 'Crep Protect',
+      name: 'Ultimate Shoe Care Kit',
+      category: 'Vệ Sinh Giày',
+      tags: ['vệ sinh giày', 'làm sạch', 'bảo quản', 'dung dịch', 'bàn chải', 'sneaker care', 'tẩy vết bẩn', 'phụ kiện giày'],
+      description: {
+        short: 'Bộ kit vệ sinh giày thần thánh giúp đôi giày của bạn luôn như mới.',
+        long: 'Bộ sản phẩm vệ sinh giày cao cấp Crep Protect bao gồm dung dịch làm sạch chuyên sâu Cure 100ml, bàn chải lông heo rừng mềm mại (không làm xước da hay vải), và khăn lau microfiber. Giải pháp hoàn hảo để làm sạch mọi vết bẩn cứng đầu trên sneakers.',
+      },
+      specs: { material: 'Solution + Brush + Cloth', tech: 'Deep Cleaning', terrain: 'Maintenance' },
     }
   ];
 
@@ -166,6 +236,7 @@ async function seedProducts(categories: Category[]) {
         status: 'active',
         description: template.description,
         attributes: template.specs,
+        tags: template.tags ?? [],
         media: {
           images: [faker.image.url(), faker.image.url()],
           thumbnail: faker.image.url(),

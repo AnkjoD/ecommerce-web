@@ -22,6 +22,8 @@ export interface ProductMetadata {
   rating_avg: number
   category?: Category
   variants?: ProductVariant[]
+  attribute_order?: string[]
+  primary_variant_id?: string
 }
 
 export interface ProductVariant {
@@ -36,6 +38,7 @@ export interface ProductVariant {
   color?: string
   size?: string
   image_url?: string
+  options?: Record<string, string>
   product: ProductMetadata
 }
 

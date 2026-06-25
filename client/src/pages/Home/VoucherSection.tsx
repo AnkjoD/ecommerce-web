@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Box, Container, Typography, Stack, Button, Skeleton } from '@mui/material'
+import { Box, Container, Typography, Stack, Button, Skeleton, Divider } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import { motion } from 'framer-motion'
 import LocalActivityIcon from '@mui/icons-material/LocalActivity'
@@ -67,7 +67,7 @@ export default function VoucherSection() {
           {isLoading ? (
             [1, 2, 3, 4].map(i => <Skeleton key={i} variant="rectangular" width={320} height={160} sx={{ borderRadius: 6, flexShrink: 0 }} />)
           ) : (
-            coupons.map((coupon, i) => (
+            coupons.map((coupon: any, i: number) => (
               <motion.div
                 key={coupon.id}
                 initial={{ opacity: 0, y: 30 }}

@@ -1,0 +1,31 @@
+# --- AI & PYTHON ---
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+*.model
+*.bin
+*.pth
+*.pkl
+*.joblib
+.pytest_cache/
+
+# --- DATA & LOGS ---
+data/*.csv
+!data/*_seed.csv
+*.log
+*.json
+!intent_model_meta.json
+pipeline_report_*.json
+
+# --- SCRIPTS ---
+scripts/
+
+
+# --- VECTOR DB ---
+qdrant_db/
+qdrant_storage/
+
+# --- ENV ---
+.env
+.env.*

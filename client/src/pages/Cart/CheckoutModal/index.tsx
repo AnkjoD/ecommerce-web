@@ -26,9 +26,8 @@ import {
   LocationOn,
   LocalShipping,
   AccountBalanceWallet,
-  Add,
   LocalOffer,
-  KeyboardArrowRight as KeyboardArrowRightIcon
+  CheckCircle as CheckCircleIcon
 } from '@mui/icons-material'
 import { useState, useMemo, useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
@@ -333,7 +332,7 @@ export default function CheckoutModal({ open, onClose, onConfirm, loading, total
                <Box sx={{ mb: 1, animation: 'fade-in 0.5s ease' }}>
                   <Typography variant="caption" fontWeight={900} color="text.disabled" sx={{ letterSpacing: 1.5, mb: 1.5, display: 'block', ml: 1 }}>MÃ CÓ SẴN CHO BẠN:</Typography>
                   <Stack direction="row" spacing={1.5} sx={{ overflowX: 'auto', pb: 1, '&::-webkit-scrollbar': { display: 'none' } }}>
-                     {availableCoupons.map((coupon) => (
+                     {availableCoupons.map((coupon: any) => (
                         <Box 
                            key={coupon.id}
                            onClick={() => applyVoucher(coupon.code)}

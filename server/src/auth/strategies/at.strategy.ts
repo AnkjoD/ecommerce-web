@@ -12,7 +12,7 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
         (req: any) => req?.cookies?.['hm-sid'],
       ]),
-      secretOrKey: config.get<string>('JWT_ACCESS_SECRET'),
+      secretOrKey: config.get<string>('JWT_ACCESS_SECRET')!,
     });
   }
 

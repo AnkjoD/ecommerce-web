@@ -1,18 +1,19 @@
 services:
   db:
-    image: pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg17
     container_name: web-ban-hang-db
     restart: always
+    profiles: ["infra", "dev", "full"]
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: web-ban-hang
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,9 +21,10 @@ services:
       - app-network
 
   redis:
-    image: redis:7-alpine
+    image: redis:alpine
     container_name: web-ban-hang-redis
     restart: always
+    profiles: ["infra", "dev", "full"]
     ports:
       - "6379:6379"
     networks:
@@ -32,8 +34,32 @@ services:
     image: adminer:latest
     container_name: web-ban-hang-adminer
     restart: always
+    profiles: ["infra", "dev", "full"]
     ports:
       - "8080:8080"
+    networks:
+      - app-network
+
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: web-ban-hang-ai
+    restart: always
+    profiles: ["dev", "full"]
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"   # FastAPI
+      - "8501:8501"   # Streamlit demo
+    environment:
+      DATABASE_URL: "postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      LLM_MODEL: ${LLM_MODEL}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      TOP_K_CONTEXT: ${TOP_K_CONTEXT}
+      CHAT_HISTORY_LIMIT: ${CHAT_HISTORY_LIMIT}
     networks:
       - app-network
 
@@ -43,6 +69,7 @@ services:
       dockerfile: Dockerfile
     container_name: web-ban-hang-server
     restart: always
+    profiles: ["dev", "full"]
     depends_on:
       db:
         condition: service_healthy
@@ -56,7 +83,7 @@ services:
     env_file:
       - ./server/.env
     environment:
-      DATABASE_URL: "postgresql://postgres:password@db:5432/web-ban-hang?schema=public"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"
       REDIS_URI: "redis://redis:6379"
     networks:
       - app-network
@@ -67,6 +94,7 @@ services:
       dockerfile: Dockerfile
     container_name: web-ban-hang-admin
     restart: always
+    profiles: ["full"]
     ports:
       - "8081:8080"
     depends_on:
@@ -85,6 +113,7 @@ services:
       dockerfile: Dockerfile
     container_name: web-ban-hang-client
     restart: always
+    profiles: ["full"]
     ports:
       - "3000:3000"
     depends_on:

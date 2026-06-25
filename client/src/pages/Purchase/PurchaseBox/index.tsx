@@ -10,7 +10,7 @@ import {
   PendingActions,
   Inventory,
   Cancel,
-  Replay,
+  Replay as ReplayIcon,
   Info,
   CreditCard,
   Payments,

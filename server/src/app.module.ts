@@ -17,6 +17,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { GhtkModule } from './ghtk/ghtk.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { StatsModule } from './stats/stats.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { StatsModule } from './stats/stats.module';
     GhtkModule,
     AuditLogsModule,
     StatsModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

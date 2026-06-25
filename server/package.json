@@ -23,6 +23,7 @@
     "db:seed:small": "SEED_SIZE=small tsx scripts/seed.ts",
     "db:seed:large": "SEED_SIZE=large tsx scripts/seed.ts",
     "db:seed:csv": "tsx scripts/seed-shopee.ts",
+    "db:seed:tiki": "tsx scripts/seed-tiki.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed"
   },
   "dependencies": {

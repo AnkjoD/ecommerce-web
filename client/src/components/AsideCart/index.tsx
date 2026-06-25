@@ -33,8 +33,8 @@ const AsideCart = () => {
 
     // 1. Data Fetching
     const { data: purchaseData } = useQuery({
-        queryKey: ['purchases', { status: purchaseStatus.inCart }],
-        queryFn: () => purchaseApi.getPurchases({ status: purchaseStatus.inCart }),
+        queryKey: ['purchases', { status: Number(purchaseStatus.inCart) }],
+        queryFn: () => purchaseApi.getPurchases({ status: Number(purchaseStatus.inCart) }),
         enabled: isAuthenticated && isOpenAsideCart
     })
 
@@ -196,7 +196,7 @@ const AsideCart = () => {
                                             <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1 }}>
                                                 <Box sx={{ pr: 3 }}>
                                                     <Typography variant="caption" fontWeight={900} color="primary.main" sx={{ display: 'block', mb: 0.2, letterSpacing: 1 }}>
-                                                        {item.variant.product.categories?.[0]?.name?.toUpperCase() || 'COLLECTION'}
+                                                        {item.variant.product.category?.name?.toUpperCase() || 'COLLECTION'}
                                                     </Typography>
                                                     <Typography variant="body2" fontWeight={1000} sx={{ fontSize: '0.95rem', lineHeight: 1.2 }}>
                                                         {item.variant.product.name}

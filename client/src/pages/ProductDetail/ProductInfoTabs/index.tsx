@@ -10,10 +10,10 @@ import {
   Rating, 
   Divider, 
   Button,
-  LinearProgress
+  LinearProgress,
+  Chip as Badge
 } from '@mui/material';
 import { 
-  EditNote as EditNoteIcon, 
   CheckCircle as CheckCircleIcon,
   Reply as ReplyIcon,
   VerifiedUser as VerifiedUserIcon,
@@ -23,8 +23,9 @@ import {
 } from '@mui/icons-material';
 import { alpha, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router';
+import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { format, isValid } from 'date-fns';
+import { format } from 'date-fns';
 import { AppContext } from '~/contexts/app.context';
 import path from '~/constants/path';
 import type { Product } from '~/types/product.type';

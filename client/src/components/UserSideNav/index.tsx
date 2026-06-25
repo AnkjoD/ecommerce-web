@@ -27,7 +27,7 @@ export default function UserSideNav() {
           boxShadow: `0 4px 30px ${alpha(theme.palette.common.black, 0.1)}`, 
       }}>
         <Avatar 
-            src={profile?.avatar} 
+            src={profile?.avatar || undefined} 
             sx={{ 
                 width: 54, height: 54, 
                 border: `2px solid ${theme.palette.primary.main}`, 

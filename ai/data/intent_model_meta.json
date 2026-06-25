@@ -1,0 +1,39 @@
+{
+  "model_name": "LightGBM",
+  "embedding_model": "BAAI/bge-m3",
+  "classes": [
+    "chitchat",
+    "offtopic",
+    "shopping"
+  ],
+  "test_f1_macro": 0.9889,
+  "cv_f1_mean": 0.9882,
+  "cv_f1_std": 0.0015,
+  "train_samples": 36619,
+  "label_distribution": {
+    "shopping": 11262,
+    "chitchat": 16411,
+    "offtopic": 8946
+  },
+  "trained_at": "2026-06-24T13:39:07",
+  "all_models_comparison": [
+    {
+      "name": "Logistic Regression",
+      "cv_f1_mean": 0.986431154136198,
+      "cv_f1_std": 0.0010099599287532678,
+      "test_f1": 0.9838357807735497
+    },
+    {
+      "name": "Linear SVM",
+      "cv_f1_mean": 0.9878518774733338,
+      "cv_f1_std": 0.0009550689945346059,
+      "test_f1": 0.9880059595199353
+    },
+    {
+      "name": "LightGBM",
+      "cv_f1_mean": 0.9882413657700916,
+      "cv_f1_std": 0.0014745500298537831,
+      "test_f1": 0.9889402525369558
+    }
+  ]
+}

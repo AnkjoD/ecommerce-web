@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+psycopg[binary]
+sqlalchemy
+pgvector
+pydantic-settings
+torch
+transformers
+pyvi
+sentence-transformers
+ollama
+python-multipart
+python-dotenv
+streamlit
+requests
+redis
+httpx

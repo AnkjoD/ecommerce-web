@@ -12,7 +12,7 @@ import {
   useTheme,
   CircularProgress
 } from '@mui/material';
-import { Close as CloseIcon, Add as AddIcon, Remove as RemoveIcon, ShoppingBagOutlined as ShoppingBagIcon } from '@mui/icons-material';
+import { Close as CloseIcon, ShoppingBagOutlined as ShoppingBagIcon } from '@mui/icons-material';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import productApi from '~/apis/product.api';
@@ -22,7 +22,7 @@ import InputNumber from '~/components/InputNumber';
 import { useNavigate } from 'react-router';
 import { generateNameId } from '~/utils/url';
 import path from '~/constants/path';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface Props {
   open: boolean;
@@ -108,7 +108,7 @@ export default function QuickViewModal({ open, onClose, product }: Props) {
 
           <DialogContent sx={{ p: 0 }}>
              <Grid container>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                    <Box sx={{ p: 4, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: alpha(theme.palette.divider, 0.02) }}>
                       <motion.img 
                         key={currentVariant?.image_url}
@@ -121,7 +121,7 @@ export default function QuickViewModal({ open, onClose, product }: Props) {
                    </Box>
                 </Grid>
                 
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                    <Box sx={{ p: { xs: 4, md: 6 }, height: '100%' }}>
                       <Typography variant="caption" color="primary" fontWeight={900} sx={{ letterSpacing: 2, mb: 1, display: 'block' }}>QUICK VIEW</Typography>
                       <Typography variant="h4" fontWeight={900} sx={{ mb: 2, letterSpacing: -1, lineHeight: 1.2 }}>{product.name}</Typography>

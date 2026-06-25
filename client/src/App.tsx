@@ -8,6 +8,7 @@ import { AppProvider } from './providers/app.provider'
 
 import { ErrorBoundary } from 'react-error-boundary'
 import { Box, Typography, Button } from '@mui/material'
+import ChatWidget from './components/Chat/ChatWidget'
 
 const ErrorFallback = ({ error, resetErrorBoundary }: any) => {
   return (
@@ -45,6 +46,7 @@ const App = () => {
           pauseOnHover
           theme='colored'
         />
+        <ChatWidget />
       </AppProvider>
     </QueryClientProvider>
   )
