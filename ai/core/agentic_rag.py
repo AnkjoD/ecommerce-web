@@ -13,11 +13,10 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from llm.llm_client import get_llm_client, LLMMessage
+from llm.llm_client import get_generate_client, LLMMessage
 from llm.llm_router import route_query, RouterResult
 from core.retrieval import CategoryMatcher, hybrid_search
 from core.prompt_builder import build_rag_prompt
-from core.intent_classifier import classify_intent, SHOP_FAQ
 from core.order_service import get_user_orders, get_active_coupons
 
 logger = logging.getLogger("homura.deterministic")
@@ -176,32 +175,47 @@ def run_deterministic_chat(
     """
     latencies = {}
 
-    # ── TẦNG 0: INTENT CLASSIFICATION ─────────────────────────────────────
-    intent = classify_intent(query, user_id)
-    logger.info(f"[E2E-DEBUG] intent: {intent}")
-
-    if intent == "order_inquiry":
-        return _handle_order_intent(query, session, user_id, chat_history)
-
-    if intent == "coupon_inquiry":
-        return _handle_coupon_intent(query, session, chat_history)
-
-    if intent == "general_chat":
-        return _handle_general_chat(query, chat_history)
-
-    # intent == "product_search" → tiếp tục pipeline cũ
-    # ── TẦNG 2: EXTRACTOR ──────────────────────────────────────────────────
+    # ── TẦNG 1: LLM ROUTER (Gemini Flash) ──────────────────────────────────
     t0 = time.time()
     router_result: RouterResult = route_query(query)
-    latencies["layer2_extractor_ms"] = round((time.time() - t0) * 1000)
+    latencies["layer1_router_ms"] = round((time.time() - t0) * 1000)
+    
+    intent = router_result.intent
+    logger.info(f"[E2E-DEBUG] intent: {intent}")
 
-    filters_dict = router_result.to_filter_dict()
+    if intent in ("ORDER_LOOKUP", "ORDER_HISTORY"):
+        return _handle_order_intent(query, session, user_id, chat_history)
+
+    if intent == "COUPON_INQUIRY":
+        return _handle_coupon_intent(query, session, chat_history)
+
+    if intent == "CHITCHAT":
+        return _handle_general_chat(query, chat_history)
+
+    if intent == "OFFTOPIC":
+        return {
+            "response": "Mình chỉ có thể tư vấn về sản phẩm tại Homura Shop thôi bạn nhé 😊 Bạn muốn tìm sản phẩm gì không?",
+            "products": [], "latencies": latencies, 
+            "router_result": router_result.__dict__,
+            "mode": "offtopic"
+        }
+
+    if intent == "NEED_CLARIFICATION":
+        return {
+            "response": "Bạn đang tìm loại sản phẩm nào ạ? Cho mình biết thêm về mục đích sử dụng hoặc ngân sách để mình tư vấn đúng hơn nhé 😊",
+            "products": [], "latencies": latencies,
+            "router_result": router_result.__dict__,
+            "mode": "need_clarification"
+        }
+
+    # PRODUCT_SEARCH / STOCK_CHECK / PRICE_CHECK
     rewritten_query = router_result.query_rewritten or query
+    filters_dict = router_result.to_filter_dict()
 
     logger.info(f"[E2E-DEBUG] query_original  : {query}")
     logger.info(f"[E2E-DEBUG] query_rewritten : {rewritten_query}")
     logger.info(f"[E2E-DEBUG] filters_dict    : {filters_dict}")
-    
+
     # ── TẦNG 3: RETRIEVAL (Hybrid Search + SQL Filters + Rerank) ───────────
     t1 = time.time()
     query_vector = embedding_engine.get_embedding(rewritten_query)
@@ -292,8 +306,7 @@ def run_deterministic_chat(
 
         messages.append(LLMMessage(role="user", content=full_prompt))
 
-        
-        llm = get_llm_client()
+        llm = get_generate_client()
         try:
             llm_resp = llm.chat(messages=messages, temperature=0.3, max_tokens=1024)
             final_response = llm_resp.content.strip()

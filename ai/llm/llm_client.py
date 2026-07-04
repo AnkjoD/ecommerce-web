@@ -53,11 +53,12 @@ GEMINI_MODEL    = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 GROQ_API_KEY    = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL      = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
 # Router có thể dùng key riêng (fallback về key generation nếu không set)
+ROUTER_LLM_PROVIDER   = os.getenv("ROUTER_LLM_PROVIDER", "gemini").lower()
 ROUTER_GEMINI_API_KEY = os.getenv("ROUTER_GEMINI_API_KEY") or GEMINI_API_KEY
 ROUTER_OPENAI_API_KEY = os.getenv("ROUTER_OPENAI_API_KEY") or OPENAI_API_KEY
 ROUTER_GROQ_API_KEY   = os.getenv("ROUTER_GROQ_API_KEY")   or GROQ_API_KEY
+ROUTER_GEMINI_MODEL   = os.getenv("ROUTER_GEMINI_MODEL", "gemini-2.0-flash")
 LLM_TIMEOUT     = int(os.getenv("LLM_TIMEOUT", "120"))
-
 
 # ─── Key Pool — hỗ trợ nhiều API key, tự động rotate ────────────────────────
 class KeyPool:
@@ -122,10 +123,9 @@ GEMINI_KEY_POOL = KeyPool.from_env("GEMINI_API_KEY")
 OPENAI_KEY_POOL = KeyPool.from_env("OPENAI_API_KEY")
 GROQ_KEY_POOL   = KeyPool.from_env("GROQ_API_KEY")
 # Router pools (fallback về generation pool nếu không có key riêng)
-ROUTER_GEMINI_POOL = KeyPool(ROUTER_GEMINI_API_KEY) if ROUTER_GEMINI_API_KEY else GEMINI_KEY_POOL
-ROUTER_OPENAI_POOL = KeyPool(ROUTER_OPENAI_API_KEY) if ROUTER_OPENAI_API_KEY else OPENAI_KEY_POOL
-ROUTER_GROQ_POOL   = KeyPool(ROUTER_GROQ_API_KEY)   if ROUTER_GROQ_API_KEY   else GROQ_KEY_POOL
-
+ROUTER_GEMINI_POOL = KeyPool.from_env("ROUTER_GEMINI_API_KEY") or GEMINI_KEY_POOL
+ROUTER_OPENAI_POOL = KeyPool.from_env("ROUTER_OPENAI_API_KEY") or OPENAI_KEY_POOL
+ROUTER_GROQ_POOL   = KeyPool.from_env("ROUTER_GROQ_API_KEY")   or GROQ_KEY_POOL
 
 # ─── Data classes ─────────────────────────────────────────────────────────────
 @dataclass
@@ -183,7 +183,7 @@ class BaseLLMClient:
 class OllamaClient(BaseLLMClient):
     """Gọi Ollama /api/chat với hỗ trợ tool calling."""
 
-    def __init__(self, base_url: str = OLLAMA_BASE_URL, model: str = OLLAMA_MODEL):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "qwen2.5:7b"):
         import requests as _req
         self._req = _req
         self.base_url = base_url.rstrip("/")
@@ -292,10 +292,10 @@ class OllamaClient(BaseLLMClient):
 class OpenAIClient(BaseLLMClient):
     """Gọi OpenAI API với tool calling (gpt-4o-mini mặc định)."""
 
-    def __init__(self, api_key: str = OPENAI_API_KEY, model: str = OPENAI_MODEL):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
         try:
             from openai import OpenAI
-            self._client = OpenAI(api_key=api_key)
+            self._client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
         except ImportError:
             raise ImportError("openai package không được cài. Chạy: pip install openai")
         self.model = model
@@ -373,10 +373,10 @@ class GeminiClient(BaseLLMClient):
       gemini-2.0-flash   ← cần billing được bật
     """
 
-    def __init__(self, api_key: str = GEMINI_API_KEY, model: str = GEMINI_MODEL):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-1.5-flash"):
         try:
             from google import genai
-            self._client = genai.Client(api_key=api_key)
+            self._client = genai.Client(api_key=api_key or os.getenv("GEMINI_API_KEY"))
         except ImportError:
             raise ImportError("google-genai không được cài. Chạy: pip install google-genai")
         # SDK tự xử lý model name — không cần thêm prefix
@@ -462,11 +462,11 @@ class GroqClient(BaseLLMClient):
 
     GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
-    def __init__(self, api_key: str = GROQ_API_KEY, model: str = GROQ_MODEL):
+    def __init__(self, api_key: Optional[str] = None, model: str = "llama-3.1-8b-instant"):
         try:
             from openai import OpenAI
             self._client = OpenAI(
-                api_key=api_key,
+                api_key=api_key or os.getenv("GROQ_API_KEY"),
                 base_url=self.GROQ_BASE_URL,
             )
         except ImportError:
@@ -531,38 +531,23 @@ class GroqClient(BaseLLMClient):
         )
 
 
-# ─── Factory ──────────────────────────────────────────────────────────────────
-_client_singleton: Optional[BaseLLMClient] = None
-
-
 def build_client(
     provider: str,
     model: Optional[str] = None,
     api_key: Optional[str] = None,
     ollama_url: Optional[str] = None,
-    ollama_model: Optional[str] = None,
 ) -> BaseLLMClient:
-    """
-    Tạo client theo provider — KHÔNG singleton, dùng khi cần client độc lập
-    (ví dụ: router dùng Groq, generation dùng Gemini).
-
-    Args:
-        provider  : "ollama" | "openai" | "gemini" | "groq"
-        model     : override model name (optional)
-        api_key   : override API key (optional, dùng env nếu không set)
-        ollama_url: override Ollama base URL (optional)
-        ollama_model: alias cho model khi provider=ollama
-    """
+    """Tạo client theo provider."""
     p = provider.lower()
 
     if p == "ollama":
-        m = ollama_model or model or OLLAMA_MODEL
+        m = model or OLLAMA_MODEL
         url = ollama_url or OLLAMA_BASE_URL
         logger.info(f"[build_client] Ollama ({m} @ {url})")
         return OllamaClient(base_url=url, model=m)
 
     if p == "openai":
-        key = api_key or OPENAI_API_KEY
+        key = api_key or OPENAI_KEY_POOL.current() or OPENAI_API_KEY
         m   = model or OPENAI_MODEL
         if not key:
             logger.warning("[build_client] OPENAI_API_KEY chưa set, fallback Ollama")
@@ -571,7 +556,7 @@ def build_client(
         return OpenAIClient(api_key=key, model=m)
 
     if p == "gemini":
-        key = api_key or GEMINI_API_KEY
+        key = api_key or GEMINI_KEY_POOL.current() or GEMINI_API_KEY
         m   = model or GEMINI_MODEL
         if not key:
             logger.warning("[build_client] GEMINI_API_KEY chưa set, fallback Ollama")
@@ -580,7 +565,7 @@ def build_client(
         return GeminiClient(api_key=key, model=m)
 
     if p == "groq":
-        key = api_key or GROQ_API_KEY
+        key = api_key or GROQ_KEY_POOL.current() or GROQ_API_KEY
         m   = model or GROQ_MODEL
         if not key:
             logger.warning("[build_client] GROQ_API_KEY chưa set, fallback Ollama")
@@ -592,20 +577,28 @@ def build_client(
     return OllamaClient()
 
 
-def get_llm_client(
-    provider: Optional[str] = None,
-    force_new: bool = False,
-) -> BaseLLMClient:
-    """
-    Trả về LLM client theo provider.
-    Mặc định đọc từ env LLM_PROVIDER.
-    Singleton — tái dùng connection, không khởi tạo lại mỗi request.
-    """
-    global _client_singleton
+_router_client: Optional[BaseLLMClient] = None
+_generate_client: Optional[BaseLLMClient] = None
 
-    if _client_singleton is not None and not force_new and provider is None:
-        return _client_singleton
+def get_router_client() -> BaseLLMClient:
+    """Dùng router provider định nghĩa trong .env (mặc định gemini)."""
+    global _router_client
+    if _router_client is None:
+        p = ROUTER_LLM_PROVIDER
+        if p == "gemini":
+            _router_client = build_client(provider=p, model=ROUTER_GEMINI_MODEL, api_key=ROUTER_GEMINI_POOL.current())
+        elif p == "openai":
+            _router_client = build_client(provider=p, api_key=ROUTER_OPENAI_POOL.current())
+        elif p == "groq":
+            _router_client = build_client(provider=p, api_key=ROUTER_GROQ_POOL.current())
+        else:
+            _router_client = build_client(provider=p)
+    return _router_client
 
-    p = (provider or LLM_PROVIDER).lower()
-    _client_singleton = build_client(p)
-    return _client_singleton
+def get_generate_client() -> BaseLLMClient:
+    """Dùng generation provider định nghĩa trong .env (mặc định ollama)."""
+    global _generate_client
+    if _generate_client is None:
+        _generate_client = build_client(provider=LLM_PROVIDER)
+    return _generate_client
+
